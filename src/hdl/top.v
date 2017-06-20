@@ -49,14 +49,14 @@ module top(
     localparam str4="   NexysVideo   ", str4len=16;
     
     //state machine registers.
-    reg [2:0] state = Idle;
+    reg [2:0] state = Init;//initialize the oled display on demo startup
     reg [5:0] count = 0;//loop index variable
     reg       once = 0;//bool to see if we have set up local pixel memory in this session
         
     //oled control signals
     //command start signals, assert high to start command
     reg        update_start = 0;        //update oled display over spi
-    reg        disp_on_start = 0;       //turn the oled display on
+    reg        disp_on_start = 1;       //turn the oled display on
     reg        disp_off_start = 0;      //turn the oled display off
     reg        toggle_disp_start = 0;   //turns on every pixel on the oled, or returns the display to before each pixel was turned on
     reg        write_start = 0;         //writes a character bitmap into local memory

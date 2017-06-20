@@ -6,7 +6,7 @@
 // Create Date: 09/22/2016 09:58:43 AM
 // Module Name: SpiCtrl
 // Project Name: OLED Demo
-// Description: SPI Controller. Sends a data byte on start flag.
+// Description: SPI Controller. Sends a data byte on start flag high, asserts ready high when not busy.
 // 
 // Revision:
 // Revision 0.01 - File Created

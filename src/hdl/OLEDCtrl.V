@@ -20,25 +20,36 @@
 module OLEDCtrl (
 	input 		clk,
 	
+	//Write command pins, when write_start asserted high, load pixel data for ascii character into local memory at address.
+	//When ready to use / operation completed, assert write_ready high - start ignored when display off or machine is otherwise busy.
 	input 		write_start,		//inserts an ascii character's bitmap into display memory at specified address
 	input [7:0] write_ascii_data,	//ascii value of character to add to memory
 	input [8:0] write_base_addr,	//on screen address of character to add {y[1:0], x[3:0], 3'b0}
 	output wire write_ready,		//end of character bitmap write sequence
 	
+	//Update command pins, when update_start asserted high, send pixel data contents of local memory - or zeroes if update_clear asserted - to OLED over SPI.
+	//When ready to use / operation completed, assert update_ready high - start ignored when display off or machine is otherwise busy.
 	input 		update_start,	//updates oled display with memory contents
     input       update_clear,
 	output wire update_ready,	//end of update sequence flag
 	
+	//Display On command pins, when disp_on_start asserted high, do initialization sequence as per spec.
+	//When ready to use / operation completed, assert disp_on_ready high - start ignored when display is already on.
 	input  		disp_on_start,	//starts initialization sequence
 	output wire disp_on_ready,	//end of startup sequence flag
 	
+	//Display Off command pins, when disp_off_start asserted high, do safe shutdown sequence as per spec.
+	//When ready to use / operation completed, assert update_ready high - start ignored when display off or machine is otherwise busy.
 	input  		disp_off_start,	//starts shutdown sequence
 	output wire disp_off_ready,	//shutdown sequence available flag
 	
+	//Toggle Display command pins, when toggle_disp_start asserted high, sends commands to turn all display pixels on / revert to original state.
+	//When ready to use / operation completed, toggle_disp_ready asserted high - start ignored when display off or machine is otherwise busy.
 	input       toggle_disp_start,
 	output wire toggle_disp_ready,
 	
-	output wire SDIN,	//OLED command pins
+	//OLED command pins
+	output wire SDIN,
 	output wire SCLK,
 	output wire DC,
 	output wire RES,
@@ -46,16 +57,12 @@ module OLEDCtrl (
 	output wire VDD
 );
 
-//STATE MACHINE IMPLEMENTATION
-////STATE GROUPS:
+//STATE MACHINE CODES
 localparam Idle                 = 8'h00;
-
 //STARTUP STATES
 localparam Startup              = 8'h10;
 localparam StartupFetch         = 8'h11;
-
 //ACTIVE STATES
-//Idle shared as 8'h00
 localparam ActiveWait           = 8'h20;
 localparam ActiveUpdatePage     = 8'h21;
 localparam ActiveUpdateScreen   = 8'h22;
@@ -66,13 +73,11 @@ localparam ActiveToggleDispWait = 8'h26;
 localparam ActiveWrite          = 8'h27;
 localparam ActiveWriteTran      = 8'h28;
 localparam ActiveWriteWait      = 8'h29;
-
-//Bringdown STATES
+//BRINGDOWN STATES
 localparam BringdownDispOff     = 8'h30;
 localparam BringdownVbatOff     = 8'h31;
 localparam BringdownDelay       = 8'h32;
 localparam BringdownVddOff      = 8'h33;
-
 //UTILITY/MISCELLANEOUS STATES
 localparam UtilitySpiWait      = 8'h41;
 localparam UtilityDelayWait    = 8'h42;
@@ -162,40 +167,28 @@ assign pbuf_write_en = (state == ActiveWrite) ? 1'b1 : 1'b0;
 assign pbuf_write_addr = temp_write_base_addr + write_byte_count;
 
 //read only memory for character bitmaps
-block_rom #(
-    .DATA_WIDTH (8),
-    .ADDR_WIDTH (10),
-    .FILENAME   ("charLib.dat")
-) CHAR_LIB_COMP (
-    .clk        (clk),
-    .addr       (char_lib_addr),
-    .dout       (pbuf_write_data)
+charLib CHAR_LIB (
+    .clka(clk),
+    .addra(char_lib_addr),
+    .douta(pbuf_write_data)
 );
 
 //pixel buffer
-block_ram #(
-    .DATA_WIDTH     (8),
-    .ADDR_WIDTH     (9),
-    .INIT_FROM_FILE ("false"),
-    .INIT_FILENAME  ()
-) BYTE_BUFFER (
-    .clk            (clk),
-    .write_en       (pbuf_write_en),
-    .write_addr     (pbuf_write_addr),
-    .write_data     (pbuf_write_data),
-    .read_addr      (pbuf_read_addr),
-    .read_data      (pbuf_read_data)
+pixel_buffer PIXEL_BUFFER (
+    .clka  (clk),
+    .wea   (pbuf_write_en),
+    .addra (pbuf_write_addr),
+    .dina  (pbuf_write_data),
+    .clkb  (clk),
+    .addrb (pbuf_read_addr),
+    .doutb (pbuf_read_data)
 );
 
 //initialization sequence op code look up
-block_rom #(
-    .DATA_WIDTH(16),
-    .ADDR_WIDTH(4),
-    .FILENAME("init_sequence.dat")
-) init_sequence (
-    .clk(clk),
-    .addr(startup_count),
-    .dout(init_operation)
+init_sequence_rom INIT_SEQ (
+    .clka(clk),
+    .addra(startup_count),
+    .douta(init_operation)
 );
 
 //handshake flags, ready means associated start will be accepted
