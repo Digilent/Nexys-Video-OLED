@@ -3,18 +3,18 @@ Nexys Video OLED Demo
  
 Description
 --------------
-This project is a Vivado demo using the Zedboard's LEDs, pushbuttons and OLED Display written in Verilog. When programmed onto the board,  the display will automatically be initialized. When you are done operating the demo, and want to turn your board off, press the CPU Reset Button to turn the display off. LED0 is tied to the status of the OLED display. If the LED0 is on so is the OLED display. The display can be turned on from an off state by pressing the CPU Reset Button again. The OLED Display is controlled by the BTNR, BTNU, BTNC and BTND of the D-Pad Buttons as shown in the table below.
+This project is a Vivado demo using the Nexys Video's LEDs, pushbuttons and OLED Display written in Verilog. When programmed onto the board,  the display will automatically be initialized. When you are done operating the demo, and want to turn your board off, press the CPU Reset Button to turn the display off. LED0 is tied to the status of the OLED display. If the LED0 is on so is the OLED display. The display can be turned on from an off state by pressing the CPU Reset Button again. The OLED Display is controlled by the BTNU, BTNC and BTND of the D-Pad Buttons as shown in the table below.
 
-| Button | Function                                                           |
-| ------ | -----------------------------------------------------------------  |
-| BTNC   | With the display on, each pixel on the display can                 | 
-|        | be lit up at once by pressing the center D-Pad button (BTNC).      |
-|        | Press the BTNC to return the display to its original state         |
-| BTNU   | With the display on, you can load pre-defined text onto the        |
-|        | display by pressing the up D-Pad button (BTNU)                     |                          
-| BTNR   | The OLED display can be turned on and off by pressing the right    |
-|        | D-Pad Button (BTNR)                                                |
-| BTND   | To clear the display, press the down D-Pad button (BTND)           |
+| Button      | Function                                                           |
+| ----------- | -----------------------------------------------------------------  |
+| BTNC        | With the display on, each pixel on the display can                 | 
+|             | be lit up at once by pressing the center D-Pad button (BTNC).      |
+|             | Press the BTNC to return the display to its original state         |
+| BTNU        | With the display on, you can load pre-defined text onto the        |
+|             | display by pressing the up D-Pad button (BTNU)                     |                          
+| CPU_RESET   | The OLED display can be turned on and off by pressing the CPU      |
+|             | Reset Button (CPU_RESET)                                           |
+| BTND        | To clear the display, press the down D-Pad button (BTND)           |
 
 Important Warning
 --------------
@@ -23,14 +23,14 @@ Make sure to turn off the OLED display before shutting down or reprogramming you
 Requirements
 --------------
 * **Nexys Video**:To purchase a Nexys Video, see the [Digilent Store](https://store.digilentinc.com/nexys-video-artix-7-fpga-trainer-board-for-multimedia-applications/)
-* **Vivado 2018.2 Installation**:To set up Vivado, see the [Installing Vivado and Digilent Board Files Tutorial](https://reference.digilentinc.com/vivado/installing-vivado/start).
-* **Serial Terminal Emulator Application**: For more information see the [Installing and Using a Terminal Emulator Tutorial](https://reference.digilentinc.com/learn/programmable-logic/tutorials/tera-term).
+* **Vivado 2020.1 Installation**:To set up Vivado, see the [Installing Vivado and Digilent Board Files Tutorial](https://reference.digilentinc.com/vivado/installing-vivado/start).
 * **MicroUSB Cable**
+* **12 Volt Power Supply**
  
 Demo Setup
 --------------
 1. Download and extract the most recent release ZIP archive from this repository's [Releases Page](https://github.com/Digilent/Nexys-Video-OLED/releases).
-2. Open the project in Vivado 2018.2 by double clicking on the included XPR file found at "\<archive extracted location\>/vivado_proj/Nexys-Video-OLED.xpr".
+2. Open the project in Vivado 2020.1 by double clicking on the included XPR file found at "\<archive extracted location\>/vivado_proj/Nexys-Video-OLED.xpr".
 3. In the Flow Navigator panel on the left side of the Vivado window, click **Open Hardware Manager**.
 4. Plug the Nexys Video into the computer using a MicroUSB cable.
 5. In the green bar at the top of the Vivado window, click **Open target**. Select **Auto connect** from the drop down menu.
